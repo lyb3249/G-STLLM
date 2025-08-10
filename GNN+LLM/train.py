@@ -7,6 +7,7 @@ from model import *
 from data_provider import data_provider
 from utils import EarlyStopping, metric
 from transformers import GPT2Model, GPT2Tokenizer, GPT2Config, BertModel, BertTokenizer, BertConfig, LlamaModel, LlamaTokenizer, LlamaConfig
+from baseline.Dlinear import Dlinear  # Dlinear import 추가
 import os
 
 os.makedirs("./checkpoints", exist_ok=True)
@@ -51,6 +52,8 @@ parser.add_argument('--root_path', type=str, default='/ERC/data')
 parser.add_argument('--data_path', type=str, default='pollutant.pkl')
 parser.add_argument('--target_station', type=str, default='부산북항')
 parser.add_argument('--model', type=str, default='GNNLLM')
+parser.add_argument('--moving_avg', type=int, default=25)
+parser.add_argument('--num_class', type=int, default=1)
 args = parser.parse_args()
 
 fix_seed(args.seed)
@@ -64,6 +67,8 @@ if args.model == 'GNNLLM' :
     model = GNNLLM(args).to(args.device)
 elif args.model == 'TimeLLM' :
     model = TimeLLM(args).to(args.device)
+elif args.model == 'Dlinear':
+    model = Dlinear(args).to(args.device)  # args가 configs 역할을 함
 else:
     raise ValueError(f"Unsupported model: {args.model}")
     
